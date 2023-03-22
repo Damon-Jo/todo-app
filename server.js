@@ -5,6 +5,7 @@ app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient;
 app.set('view engine', 'ejs');
 
+app.use('/public', express.static('public'));
 
 var db;
 
@@ -26,11 +27,13 @@ MongoClient.connect('mongodb+srv://admin:qwer1234@cluster0.rfmec.mongodb.net/?re
 
 
 app.get('/', function(req,res){
-    res.sendFile(__dirname + '/index.html')
+    // res.sendFile(__dirname + '/index.html')
+    res.render('index.ejs');
 })
 
 app.get('/write', function(req,res){
-    res.sendFile(__dirname + '/write.html')
+    // res.sendFile(__dirname + '/write.html')
+    res.render('write.ejs');
 })
 
 app.post('/add', function(req,res){
@@ -72,4 +75,16 @@ app.delete('/delete', function(req, res){
         console.log('removed!');
         res.status(200).send({message:'success'});
     })
+})
+
+app.get('/detail/:id', function(req, res){
+    db.collection('post').findOne({_id : parseInt(req.params.id)}, function(err, result){
+        if(result == null){
+            console.log("error")
+            // res.render('error', {errorMsg: "Can't find the data in database"})
+        } else {
+            res.render('detail.ejs', {data : result})
+        }
+    })
+    
 })

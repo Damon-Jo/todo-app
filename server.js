@@ -41,11 +41,11 @@ app.post('/add', function(req,res){
     db.collection('counter').findOne({name : 'theNumberOfPosts'}, function(err, result){
         var totalPosting = result.totalPost; // assigned the totalPost to totlPosting variable
 
-        db.collection('post').insertOne({_id : totalPosting +1, title: `${req.body.title}`, date: `${req.body.date}`}, function(err,resutl){
+        db.collection('post').insertOne({_id : totalPosting +1, title: req.body.title, date: req.body.date}, function(err,resutl){
             console.log('saved')
 
             // and then increse the totalPost
-            db.collection('conut').updateOne({name:'theNumberOfPosts'},{$inc: {totalPost:1} },function(err, result){
+            db.collection('counter').updateOne({name:'theNumberOfPosts'},{$inc: {totalPost:1} },function(err, result){
                 if(err){return console.log(error)}
             })
         })
@@ -63,3 +63,13 @@ app.get('/list', function(req, res){
     });
 
 });
+
+app.delete('/delete', function(req, res){
+    console.log(req.body) // but the data type is string { _id : '18'} --> need to change
+    req.body._id = parseInt(req.body._id);
+    console.log(req.body)
+    db.collection('post').deleteOne(req.body, function(err,result){
+        console.log('removed!');
+        res.status(200).send({message:'success'});
+    })
+})

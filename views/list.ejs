@@ -32,11 +32,46 @@
       </nav>
 
       <!-- to do list from db -->
-
-      <% for(var i = 0; i < posts.length; i++){ %>
+      <h4 class="ml-2 my-3">TO DO LIST FROM DB</h4>
+      <!-- <% for(var i = 0; i < posts.length; i++){ %>
         <h4>Title of task : <%= posts[i].title %></h4>
         <p>Due date of task : <%= posts[i].date %></p>
-      <% } %>
+        <button>delete</button>
+      <% } %> -->
+
+      <ul class="list-group">
+        <% for(var i = 0; i < posts.length; i++){ %>
+        <li class="list-group-item">
+          <!-- <p>Posting number : <%= posts[i]._id %></p> -->
+          <h4>Title of task : <%= posts[i].title %></h4>
+          <p>Due date of task : <%= posts[i].date %></p>
+          <button class="delete" data-id="<%= posts[i]._id %>">delete</button>
+        </li>
+        <% } %>
+      </ul>
+
+      <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+      
+      <script>
+        $('.delete').click(function(e){
+          var postingNum = e.target.dataset.id;  //e.target --> 실제로 누른요소
+          var clickedBtn = $(this);  // 클릭한것 (e.target 이랑 유사 but 지금 이밴트 동작하는 곳)
+
+          $.ajax({
+          method : 'DELETE',
+          url : '/delete',
+          data : {_id : postingNum}
+          }).done(function(result){
+            console.log('request success')
+            clickedBtn.parent('li').fadeOut();
+            
+          }).fail(function(xhr, textStatus, errorThrown){
+            console.log(xhr, textStatus, errorThrown)
+          })
+        })
+
+        
+      </script>
 
 
 

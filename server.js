@@ -35,11 +35,23 @@ app.get('/write', function(req,res){
 
 app.post('/add', function(req,res){
     res.send('Message Send');
-    console.log(req.body.title);
+    console.log(req.body.title); // req.body == data from input form
 
-    db.collection('post').insertOne({title: `${req.body.title}`, date: `${req.body.date}`}, function(err,resutl){
-        console.log('saved')
-    })
+    // search data which name is 'theNumberOfPosts' in 'counter collection 
+    db.collection('counter').findOne({name : 'theNumberOfPosts'}, function(err, result){
+        var totalPosting = result.totalPost; // assigned the totalPost to totlPosting variable
+
+        db.collection('post').insertOne({_id : totalPosting +1, title: `${req.body.title}`, date: `${req.body.date}`}, function(err,resutl){
+            console.log('saved')
+
+            // and then increse the totalPost
+            db.collection('conut').updateOne({name:'theNumberOfPosts'},{$inc: {totalPost:1} },function(err, result){
+                if(err){return console.log(error)}
+            })
+        })
+    });
+
+
 })
 
 // if user access to list, show the html made data from db

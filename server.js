@@ -3,6 +3,10 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient;
+
+//install method-override to use the 'PUT / DELETE request'
+const methodOverride = require('method-override')
+app.use(methodOverride('_method'))
 app.set('view engine', 'ejs');
 
 app.use('/public', express.static('public'));
@@ -86,5 +90,19 @@ app.get('/detail/:id', function(req, res){
             res.render('detail.ejs', {data : result})
         }
     })
+})
+
+app.get('/edit/:id', function(req, res){
+    db.collection('post').findOne({_id: parseInt(req.params.id)}, function(err, result){
+        console.log(result)
+        res.render('edit.ejs', {post : result})
+    })
     
 })
+
+app.put('/edit', function(req, res){
+    db.collection('post').updateOne({_id: parseInt(req.body.id)},{$set :{title: req.body.title, date: req.body.date}},function(err, result){
+        console.log('edited')
+        res.redirect('/list')
+    })
+});
